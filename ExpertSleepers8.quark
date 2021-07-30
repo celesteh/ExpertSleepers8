@@ -1,0 +1,11 @@
+(
+        \name:                  "ExpertSleepers8",
+        \path:                  "ExpertSleepers8", // path relative to the root Quarks folder
+        \summary:               "Support for an extra jack output",
+        \author:                "Charles Hutchins",
+        \organization:  "University of Kent",
+        //\helpdoc:               "help/MathLib.html",
+        \country:               "United Kingdom",
+        \since:                 "2021",
+        \status:                "alpha"
+)
