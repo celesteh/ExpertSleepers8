@@ -1,14 +1,21 @@
 ES8 {
-	classvar <options, <jack_outs, <name;
+	classvar <serverOptions, <jack_outs, <jack_name;
+	var <>not_immutable;
 
-	* options {|serverOptions, jack_name = "ES8", limit=8|
+	*initClass{
+		jack_name = "";
+	}
+
+	* options {|soptions, name = "ES8", limit=8|
 		// set limit to 8 to exclude optical outs
 
 		var inputs=0, outputs=0, options, type, property, count, num;
 
 		jack_outs = [];
 
-		name = jack_name;
+		jack_name = name;
+
+
 
 		count = {|type| // count inputs and outputs
 			(type == \input).if ({
@@ -20,14 +27,19 @@ ES8 {
 			});
 		};
 
-		serverOptions.isNil.if({ // get default options if none specified
-			options = Server.default.options;
-		}, {
-			options = serverOptions;
+
+		soptions.notNil.if({
+			serverOptions = soptions;
 		});
 
+		serverOptions.isNil.if({ // get default options if none specified
+			serverOptions = Server.default.options;
+		});
+
+
+
 		SCJConnection.getproperties.keys.do({|key|
-			key.postln;
+			//key.postln;
 			property = SCJConnection.properties[key];
 			//property.postln;
 			type = property[0].asSymbol; // type is input or output
@@ -47,12 +59,15 @@ ES8 {
 			//type.postln;
 
 		});
-		options.numInputBusChannels = outputs; // we get input from outputs
-		options.numOutputBusChannels = inputs;
-		^options;
+		serverOptions.numInputBusChannels = outputs; // we get input from outputs
+		serverOptions.numOutputBusChannels = inputs;
+
+		^serverOptions;
+
 	}
 
-	* disconnectSC{ |shouldBoot = false, scName = "SuperCollider:out_"|
+	* disconnectSC{ |server, scName = "SuperCollider:out_", action|
+
 		var src_key, func;
 
 		func = {
@@ -73,14 +88,20 @@ ES8 {
 			});
 		};
 
-		shouldBoot.if({
-			s.waitForBoot(func);
+		server.notNil.if({
+			server.waitForBoot({
+				func.value;
+				server.sync;
+				action.value;
+			});
 		}, {
 			func.value;
+			action.value();
 		});
+
 	}
 
-	*connectSC { |shouldBoot = false, scName = "SuperCollider:out_", jack_name|
+	*connectSC { |server, scName = "SuperCollider:out_", jack_name|
 		var func;
 
 		jack_name.notNil.if({
@@ -95,5 +116,12 @@ ES8 {
 
 	}
 
+	*new {
+		^super.new.init();
+	}
+
+	init {
+		not_immutable=true;
+	}
 
 }
