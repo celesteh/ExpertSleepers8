@@ -7,7 +7,7 @@
         //\helpdoc:               "help/MathLib.html",
         \country:               "United Kingdom",
         \since:                 "2021",
-        \status:                "alpha"
+        \status:                "alpha",
 		\dependencies: 			["LinuxExternal"],
     	\license: 				"GPL",
 )
